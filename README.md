@@ -33,6 +33,25 @@ flowchart LR
 
 A work item is a Markdown file with front matter (`repo`, `type`, `priority`, `depends_on`, `acceptance`, …). The state machine is `backlog → ready → in_progress → queued → testing → landed`, with side exits to `returned`, `needs_human` and `dropped`. A work item cannot become `ready` without at least one acceptance entry.
 
+## The board
+
+`ao board` serves a local, auto-refreshing page (it listens on `127.0.0.1` only). It shows what needs you, and it is where approvals happen.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/board-dark.png">
+  <img src="docs/images/board-light.png" alt="The backlogzero board with made-up example data: summary tiles, the needs-you panel with approve buttons, PM proposals, the work-item list and the operational panels">
+</picture>
+
+The screenshot uses made-up data: the repositories and work items in it do not exist. The interface text is currently Chinese. From top to bottom:
+
+- **Summary tiles.** How many items need you, how many are in progress or ready, how many have landed, today's spend against the daily budget, and how many heavy-task slots are in use.
+- **Needs you (需要你看).** Items waiting on a human, each with the reason. 批准 approves the exact commit shown, 重新入队 puts an item back in the queue, and 放弃… drops it after a second confirmation.
+- **PM proposals (PM 建议).** Backlog items proposed by the PM step that wait for your decision: adopt or drop.
+- **Work items (工作项).** Open items with status, priority, module and dependencies; finished ones are folded away.
+- **Operational panels.** Running sessions, the merge queue, heavy-task slots, today's schedule and spend, dbt results, data freshness, disk, and 7-day KPIs.
+
+To regenerate the screenshot after a UI change, see `tools/board_demo.py`.
+
 ## Naming
 
 The repository is called **backlogzero**. The command-line tool is **`ao`**, the Python package is **`agentops`**, and runtime state lives in **`~/.agentops`** (override with `AGENTOPS_HOME`). Those names predate the public name and are unchanged.

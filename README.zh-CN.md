@@ -33,6 +33,25 @@ flowchart LR
 
 工作项是带 front matter 的 Markdown 文件（`repo`、`type`、`priority`、`depends_on`、`acceptance` 等）。状态机为 `backlog → ready → in_progress → queued → testing → landed`，另有 `returned`、`needs_human`、`dropped` 分支。验收条目为空的工作项进不了 `ready`。
 
+## 看板
+
+`ao board` 在本机起一个自动刷新的页面（只监听 `127.0.0.1`）。需要你处理的事情在这里看，审批也在这里做。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/board-dark.png">
+  <img src="docs/images/board-light.png" alt="backlogzero 看板（示例数据为虚构）：顶部统计块、带批准按钮的“需要你看”面板、PM 建议、工作项列表和各运行面板">
+</picture>
+
+截图里的数据是虚构的，里面的仓库和工作项都不存在。从上到下：
+
+- **统计块。** 有几项需要你看、几项进行中或待派发、已合入多少、今天的花费和每日预算、重任务槽位占用了几个。
+- **需要你看。** 等人处理的工作项和原因。“批准”只对显示的那个提交生效，“重新入队”把工作项放回队列，“放弃…”要二次确认。
+- **PM 建议。** PM 环节提出、等你决定的积压项，可以采纳或放弃。
+- **工作项。** 未结束的列出状态、优先级、模块和依赖；已结束的折叠起来。
+- **运行面板。** 正在跑的会话、合并队列、重任务槽位、今天的计划和花费、dbt 结果、数据新鲜度、磁盘、7 天 KPI。
+
+界面改动后重新生成截图的办法见 `tools/board_demo.py`。
+
 ## 命名
 
 仓库叫 **backlogzero**，命令行叫 **`ao`**，Python 包名是 **`agentops`**，状态目录是 **`~/.agentops`**（可用 `AGENTOPS_HOME` 改位置）。这些名字早于公开名，没有改动。
