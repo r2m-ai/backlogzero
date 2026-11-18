@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a1bd5b-583a-7890-9949-e8a12c2d3bdc"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"action\":\"return_to_session\",\"reason\":\"普通冲突\",\"hint\":\"rebase 后重跑测试\"}"}}
+{"type":"turn.completed","usage":{"input_tokens":9694,"cached_input_tokens":7936,"cache_write_input_tokens":0,"output_tokens":66,"reasoning_output_tokens":29}}

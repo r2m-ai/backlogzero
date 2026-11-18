@@ -1,0 +1,26 @@
+# 一次性结构化调用（judge / PM）的 Codex profile，由 ao 渲染到 <CODEX_HOME>/judge.config.toml，
+# 启动加 --profile judge。对应 Claude 侧的 `--tools ""`：模型没有任何工具，只读沙箱，敏感目录 deny。
+# 提示词里的 <untrusted> 内容来自候选代码与测试输出，这一层保证被注入的指令既跑不了命令也读不到凭据。
+default_permissions = "judge"
+
+[features]
+shell_tool = false
+unified_exec = false
+sleep_tool = false
+
+[permissions.judge]
+extends = ":read-only"
+
+[permissions.judge.filesystem]
+"$workdir" = "read"
+"$agentops_home" = "deny"
+"$codex_home" = "deny"
+"$user_codex_home" = "deny"
+"$user_home/.ssh" = "deny"
+"$user_home/.aws" = "deny"
+"$user_home/.gnupg" = "deny"
+"$user_home/.netrc" = "deny"
+"$user_home/.claude" = "deny"
+"$user_home/.claude.json" = "deny"
+"$user_home/.config/gh" = "deny"
+"$user_home/Library/Keychains" = "deny"

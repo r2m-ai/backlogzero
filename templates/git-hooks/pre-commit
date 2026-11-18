@@ -1,0 +1,11 @@
+#!/bin/bash
+# agentops main 保护：main 只能由 steward（AGENTOPS_STEWARD=1）提交。
+branch=$(git symbolic-ref --short -q HEAD || echo detached)
+if [ "$branch" = "main" ] && [ "${AGENTOPS_STEWARD:-}" != "1" ]; then
+  common=$(git rev-parse --git-common-dir 2>/dev/null)
+  repo=$(basename "$(cd "$common/.." && pwd)")
+  "$HOME/.local/bin/ao" events emit main_protect_block --repo "$repo" --kv hook=pre-commit --kv branch=main >/dev/null 2>&1 || true
+  echo "agentops: main 只能由 steward 合入。请在工作项分支上提交，然后执行 ao land。" >&2
+  exit 1
+fi
+exit 0

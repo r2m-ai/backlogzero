@@ -1,0 +1,35 @@
+{
+  "_comment": "ao start 用 --settings 传入；项目文件里无效的键（strictAllowlist 等）放这里。{{repo}} 是仓库名，{{main_repo}} 是主仓库绝对路径。会话的 cwd 是它自己的克隆，默认只能写 cwd；主仓库和其他克隆都在 cwd 之外，再用 denyWrite 明确拒掉（render_session_settings 会把其他已存在的克隆逐个加进来）。 会话用 --setting-sources project,local，不读用户级 settings，所以在这里关掉 git 提交/PR 署名（includeCoAuthoredBy 旧键、attribution 新键都写）。",
+  "includeCoAuthoredBy": false,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/data/{{repo}}/holdout"
+      ],
+      "allowWrite": [
+        "~/.agentops/inbox",
+        "~/.cache/uv"
+      ],
+      "denyWrite": [
+        "{{main_repo}}",
+        "{{main_repo}}/.git"
+      ]
+    },
+    "network": {
+      "allowedDomains": [],
+      "strictAllowlist": true
+    }
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "600000",
+    "PYTHONHASHSEED": "0",
+    "UV_OFFLINE": "1"
+  }
+}

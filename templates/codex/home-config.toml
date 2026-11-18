@@ -1,0 +1,23 @@
+# agentops 专用的 Codex 主目录配置（CODEX_HOME=<agentops 状态目录>/codex-home），由 ao 按模板覆盖写入，不要手改。
+# 审核人自己的 ~/.codex/config.toml 在这个 HOME 下不会被读取，所以账号级连接器、托管搜索、多 agent
+# 等在这里一次关干净（清单与实测见 docs/codex-cli.md §6）；登录态 auth.json 由 ao 软链到 ~/.codex/auth.json。
+approval_policy = "never"
+notify = []
+web_search = "disabled"
+
+[features]
+apps = false
+image_generation = false
+multi_agent = false
+browser_use = false
+computer_use = false
+view_image = false
+
+[apps._default]
+enabled = false
+
+[agents]
+enabled = false
+
+[plugins._default]
+enabled = false

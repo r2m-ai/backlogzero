@@ -1,0 +1,4 @@
+# 公开快照（git archive）不带出内部记录
+docs/decisions.md export-ignore
+docs/execution-report.md export-ignore
+docs/proposals export-ignore

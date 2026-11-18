@@ -1,0 +1,50 @@
+# agentops worker 会话的 Codex profile。每个会话一份，由 ao start 渲染到
+# <CODEX_HOME>/agentops-<会话 id>.config.toml，启动加 --profile，会话结束删除。
+# 对应 Claude 侧的 templates/session-settings.json：会话只能写自己的克隆，读不到 holdout 与凭据，不能联网。
+# 账号级连接器、托管搜索等已在同目录的 config.toml（home-config.toml）里关掉。
+# 规则实测见 docs/codex-cli.md §4、§5；ao start 起会话前用 codex sandbox 按这份 profile 自检。
+default_permissions = "agentops"
+
+[permissions.agentops]
+extends = ":workspace"           # 读全盘，写工作区（克隆）与临时目录；主仓库和别的克隆在工作区外，写不了
+
+[permissions.agentops.filesystem]
+$holdout_rules
+"$clone/.git" = "write"          # :workspace 默认把 .git 设成只读，不放开 worker 就提交不了（实测）
+"$clone/.git/config" = "read"    # 但 git 配置不能改：core.fsmonitor 之类的键能带起外部程序
+"$clone/.git/hooks" = "read"     # 克隆里的 main 保护钩子也不能改
+"$clone/.codex" = "read"         # :workspace 默认已只读，这里再明写一遍：worker 不能改自己的 hooks.json
+"$uv_cache" = "write"
+"$inbox" = "write"               # ao land 只往这里投递
+"$codex_home" = "deny"           # 里面有 auth.json 软链和别的会话的 profile
+"$user_codex_home" = "deny"
+"$user_home/.ssh" = "deny"
+"$user_home/.aws" = "deny"
+"$user_home/.gnupg" = "deny"
+"$user_home/.netrc" = "deny"
+"$user_home/.claude" = "deny"
+"$user_home/.claude.json" = "deny"
+"$user_home/.config/gh" = "deny"
+"$user_home/.config/gcloud" = "deny"
+"$user_home/.git-credentials" = "deny"
+"$user_home/.npmrc" = "deny"
+"$user_home/.pypirc" = "deny"
+"$user_home/.docker" = "deny"
+"$user_home/.kube" = "deny"
+"$user_home/.azure" = "deny"
+"$user_home/.zsh_history" = "deny"
+"$user_home/.bash_history" = "deny"
+"$user_home/Library/Keychains" = "deny"
+"$user_home/Library/Cookies" = "deny"
+"$user_home/Library/Mail" = "deny"
+"$user_home/Library/Messages" = "deny"
+"$user_home/Library/Safari" = "deny"
+
+[permissions.agentops.network]
+enabled = false
+
+[shell_environment_policy]
+set = { $env }
+
+[projects."$clone"]
+trust_level = "trusted"          # 项目级 .codex/hooks.json 只在 trusted 时加载

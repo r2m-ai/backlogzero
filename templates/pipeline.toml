@@ -1,0 +1,19 @@
+# agentops 流水线配置。改动需要人批准（受保护路径）。
+
+[repo]
+name = "{{repo}}"
+default_branch = "main"
+autonomy = "auto"            # auto：策略检查通过即合入；approve：每次都要人批
+test_cmd = "just test-all"
+prepare_cmd = ""             # steward 跑测试前在集成副本里执行，例如 "uv sync --offline"；留空不执行
+max_sessions = 2
+
+[protected]
+# 这些路径由人维护，会话里的 Edit/Write 会被 hook 拦下，合并时改动了也转 needs_human
+paths = ["AGENTS.md", "CLAUDE.md", ".pipeline.toml", "justfile", ".claude/", ".codex/", "config/"]
+# 这些目录下 main 上已有的文件只能新增不能修改
+existing_only = ["tests/", "fixtures/"]
+
+[rules]
+deny_delete_under = ["src/"]          # 删除这些目录下的文件 → needs_human
+deny_public_function_removal = true   # diff 里有 -def 而无对应 +def → needs_human

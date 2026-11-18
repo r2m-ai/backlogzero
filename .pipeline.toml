@@ -1,0 +1,28 @@
+# agentops 流水线配置：套件自己也走流水线（执行报告第 9 节建议 6）。改动需要人批准（受保护路径）。
+#
+# 自举注意：~/.local/bin/ao 是对本仓库的可编辑安装，launchd 的 steward/board 和会话里的
+# hooks 都直接运行 main 上的代码。合入即生效，所以这里每次合入都要人批（autonomy = approve）。
+
+[repo]
+name = "agentops"
+default_branch = "main"
+autonomy = "approve"         # 第一批先每次人批；文档类跑顺后可改回 auto
+test_cmd = "just test-all"
+prepare_cmd = "uv sync --offline"   # steward 跑测试前在集成副本里执行；克隆由 ao start 在会话外执行
+max_sessions = 1             # 套件改动一次只开一个会话
+
+[protected]
+# 这些路径由人维护，会话里的 Edit/Write 会被 hook 拦下，合并时改动了也转 needs_human
+# hooks/、launchd/、templates 里的会话设置与提示词是流水线的护栏（git-hooks 等模板只在人侧 ao repo init 时用，不保护）；docs/decisions.md 与 docs/reviews/ 是人的记录
+paths = [
+  "AGENTS.md", "CLAUDE.md", ".pipeline.toml", "justfile", ".claude/", ".codex/",
+  "hooks/", "launchd/", "pyproject.toml", "uv.lock",
+  "templates/session-settings.json", "templates/claude/", "templates/codex/", "templates/prompts/",
+  "docs/decisions.md", "docs/plan.md", "docs/reviews/",
+]
+# 这些目录下 main 上已有的文件只能新增不能修改
+existing_only = ["tests/"]
+
+[rules]
+deny_delete_under = ["src/"]          # 删除这些目录下的文件 → needs_human
+deny_public_function_removal = true   # diff 里有 -def 而无对应 +def → needs_human

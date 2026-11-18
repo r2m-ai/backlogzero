@@ -1,0 +1,29 @@
+#!/bin/bash
+# agentops 引用保护。git 对每次引用更新调用本钩子，$1 为 prepared / committed / aborted，stdin 每行 "<old> <new> <ref>"。
+# 规则 1：refs/heads/main 只能由 steward（AGENTOPS_STEWARD=1）更新。
+# 规则 2：带 AGENTOPS_BRANCH 的会话只能更新自己的分支，不能动别的 refs/heads/*。
+[ "$1" = "prepared" ] || exit 0
+[ "${AGENTOPS_STEWARD:-}" = "1" ] && exit 0
+emit() {
+  common=$(git rev-parse --git-common-dir 2>/dev/null)
+  repo=$(basename "$(cd "$common/.." && pwd)")
+  "$HOME/.local/bin/ao" events emit main_protect_block --repo "$repo" --kv hook=reference-transaction --kv ref="$1" --kv rule="$2" >/dev/null 2>&1 || true
+}
+while read -r old new ref; do
+  [ "$old" = "$new" ] && continue
+  if [ "$ref" = "refs/heads/main" ]; then
+    emit "$ref" main
+    echo "agentops: refs/heads/main 只能由 steward 更新。" >&2
+    exit 1
+  fi
+  case "$ref" in
+    refs/heads/*)
+      if [ -n "${AGENTOPS_BRANCH:-}" ] && [ "$ref" != "refs/heads/${AGENTOPS_BRANCH}" ]; then
+        emit "$ref" own-branch
+        echo "agentops: 本会话只能更新自己的分支 ${AGENTOPS_BRANCH}，不能动 ${ref#refs/heads/}。" >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
+exit 0

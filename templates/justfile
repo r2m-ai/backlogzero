@@ -1,0 +1,20 @@
+# agentops 流水线要求的 recipe。业务仓库可以加别的，但这些名字和语义要保留。
+set shell := ["bash", "-euo", "pipefail", "-c"]
+export PYTHONHASHSEED := "0"
+
+default: test-fast
+
+# 快速自检（会话里常用）
+test-fast:
+    @echo "test-fast: 请在业务仓库里实现"
+
+# 完整测试，合并队列只认这个；3 分钟以内，不联网
+test-all:
+    @echo "test-all: 请在业务仓库里实现"
+
+# 定时采集；夜间任务
+capture:
+    @echo "capture: 请在业务仓库里实现"
+
+nightly:
+    @echo "nightly: 请在业务仓库里实现"
