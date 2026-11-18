@@ -11,6 +11,7 @@ from agentops import (
     cli_board,
     cli_doctor,
     cli_events,
+    cli_export,
     cli_launchd,
     cli_pm,
     cli_repo,
@@ -33,6 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     for module in (
         cli_workitems,
         cli_events,
+        cli_export,
         cli_slots,
         cli_sessions,
         cli_pm,
